@@ -24,10 +24,12 @@ interface SeedEntry {
 
 async function seed() {
   const dbUrl = process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5433/trueque_canarias_social';
-  const isRemote = dbUrl.includes('digitalocean') || dbUrl.includes('sslmode');
+  const needsSsl = dbUrl.includes('digitalocean') || dbUrl.includes('sslmode');
+  const cleanedUrl = dbUrl.replace(/[?&]sslmode=[^&]*/g, '').replace(/\?$/, '');
+  const caCert = process.env.DATABASE_CA_CERT ?? null;
   const pool = new pg.Pool({
-    connectionString: dbUrl,
-    ssl: isRemote ? { rejectUnauthorized: false } : false,
+    connectionString: cleanedUrl,
+    ssl: needsSsl ? { rejectUnauthorized: !!caCert, ca: caCert ?? undefined } : false,
   });
 
   try {

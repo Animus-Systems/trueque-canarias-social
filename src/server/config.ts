@@ -17,6 +17,7 @@ const envSchema = z.object({
   OPENROUTER_MODEL: z.string().default('openai/gpt-4o-mini'),
   OPENROUTER_AI_MODEL: z.string().optional(),
   COOKIE_DOMAIN: z.string().optional(),
+  DATABASE_CA_CERT: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -43,4 +44,5 @@ export const appConfig = {
   openRouterModel: env.OPENROUTER_MODEL,
   openRouterAiModel: env.OPENROUTER_AI_MODEL ?? env.OPENROUTER_MODEL,
   cookieDomain: env.COOKIE_DOMAIN ?? undefined,
+  databaseCaCert: env.DATABASE_CA_CERT ?? null,
 };

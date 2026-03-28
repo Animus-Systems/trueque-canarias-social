@@ -6,12 +6,20 @@ const { Pool } = pg;
 const needsSsl = appConfig.databaseUrl.includes('digitalocean') || appConfig.databaseUrl.includes('sslmode');
 const cleanedUrl = appConfig.databaseUrl.replace(/[?&]sslmode=[^&]*/g, '').replace(/\?$/, '');
 
+function buildSslConfig(): boolean | { rejectUnauthorized: boolean; ca?: string } {
+  if (!needsSsl) return false;
+  if (appConfig.databaseCaCert) {
+    return { rejectUnauthorized: true, ca: appConfig.databaseCaCert };
+  }
+  return { rejectUnauthorized: false };
+}
+
 const pool = new Pool({
   connectionString: cleanedUrl,
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,
-  ssl: needsSsl ? { rejectUnauthorized: false } : false,
+  ssl: buildSslConfig(),
 });
 
 pool.on('error', (err) => {

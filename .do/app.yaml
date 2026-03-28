@@ -1,0 +1,49 @@
+name: trueque-canarias-social
+region: fra
+
+services:
+  - name: api
+    github:
+      repo: Animus-Systems/trueque-canarias-social
+      branch: main
+      deploy_on_push: true
+    build_command: yarn install --frozen-lockfile && yarn build:server
+    run_command: yarn db:migrate && node dist/server/index.js
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    http_port: 3003
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3003"
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: CLIENT_ORIGIN
+        scope: RUN_TIME
+        type: SECRET
+      - key: APP_ORIGIN
+        scope: RUN_TIME
+        type: SECRET
+      - key: COOKIE_DOMAIN
+        scope: RUN_TIME
+        type: SECRET
+      - key: ADMIN_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+      - key: OPENROUTER_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: OPENROUTER_MODEL
+        value: "openai/gpt-4o-mini"
+      - key: OPENROUTER_AI_MODEL
+        value: "openai/gpt-4o-mini"
+
+databases:
+  - name: db
+    engine: PG
+    version: "16"
+    size: db-s-dev-database
+    num_nodes: 1

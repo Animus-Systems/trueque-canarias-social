@@ -1,0 +1,13 @@
+[build]
+  base = "/"
+  command = "yarn build:client"
+  publish = "dist/client"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA: all routes serve index.html (React Router handles /en, /es)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

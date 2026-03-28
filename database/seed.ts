@@ -23,8 +23,11 @@ interface SeedEntry {
 }
 
 async function seed() {
+  const dbUrl = process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5433/trueque_canarias_social';
+  const isRemote = dbUrl.includes('digitalocean') || dbUrl.includes('sslmode');
   const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5433/trueque_canarias_social',
+    connectionString: dbUrl,
+    ssl: isRemote ? { rejectUnauthorized: false } : false,
   });
 
   try {

@@ -8,6 +8,7 @@ const pool = new Pool({
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
+  ssl: appConfig.nodeEnv === 'production' ? { rejectUnauthorized: false } : false,
 });
 
 pool.on('error', (err) => {

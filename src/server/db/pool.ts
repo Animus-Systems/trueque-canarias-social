@@ -3,12 +3,15 @@ import { appConfig } from '../config.js';
 
 const { Pool } = pg;
 
+const needsSsl = appConfig.databaseUrl.includes('digitalocean') || appConfig.databaseUrl.includes('sslmode');
+const cleanedUrl = appConfig.databaseUrl.replace(/[?&]sslmode=[^&]*/g, '').replace(/\?$/, '');
+
 const pool = new Pool({
-  connectionString: appConfig.databaseUrl,
+  connectionString: cleanedUrl,
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
-  ssl: appConfig.nodeEnv === 'production' ? { rejectUnauthorized: false } : false,
+  connectionTimeoutMillis: 10000,
+  ssl: needsSsl ? { rejectUnauthorized: false } : false,
 });
 
 pool.on('error', (err) => {
